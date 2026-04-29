@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Memory Forensics Triage Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+        h1 { background: #1a1a2e; color: white; padding: 20px; border-radius: 8px; }
+        h2 { color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 5px; }
+        .section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 5px solid #e94560; }
+        .suspicious { background: #fff3cd; border-left: 5px solid #ff6b35; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        pre { background: #1a1a2e; color: #00ff88; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .high { background: #ff4444; color: white; }
+        .medium { background: #ff8800; color: white; }
+        .info { background: #0088ff; color: white; }
+        .summary-box { display: flex; gap: 20px; margin: 20px 0; }
+        .stat { background: #1a1a2e; color: white; padding: 15px 25px; border-radius: 8px; text-align: center; }
+        .stat-num { font-size: 32px; font-weight: bold; color: #e94560; }
+        .stat-label { font-size: 13px; color: #aaa; }
+    </style>
+</head>
+<body>
+    <h1>Memory Forensics Triage Report</h1>
+    <p><strong>Image:</strong> MemoryDump_Lab1.raw &nbsp;|&nbsp;
+       <strong>Tool:</strong> Volatility 3 v2.27.0 &nbsp;|&nbsp;
+       <strong>Date:</strong> 2026-04-28</p>
+
+    <div class="summary-box">
+        <div class="stat"><div class="stat-num">6</div><div class="stat-label">Plugins Run</div></div>
+        <div class="stat"><div class="stat-num">22</div><div class="stat-label">YARA Hits</div></div>
+        <div class="stat"><div class="stat-num" style="color:#cc0000">CRITICAL</div><div class="stat-label">Threat Level</div></div>
+    </div>
+
+    <div class="section">
+        <h2>Suspicious Findings Summary</h2>
+        <div class="suspicious">
+            <span class="badge high">HIGH</span>
+            <strong>DumpIt.exe</strong> detected — memory acquisition tool found running under user SmartNet. Indicates deliberate memory capture activity.
+        </div>
+        <div class="suspicious">
+            <span class="badge high">HIGH</span>
+            <strong>WinRAR.exe</strong> detected — file archiving tool active. Possible data staging or exfiltration behaviour.
+        </div>
+        <div class="suspicious">
+            <span class="badge medium">MEDIUM</span>
+            <strong>cmd.exe</strong> detected — command prompt was active. May indicate manual attacker activity or script execution.
+        </div>
+        <div class="suspicious">
+            <span class="badge medium">MEDIUM</span>
+            <strong>mspaint.exe</strong> detected — unusual for a typical session. Possibly used for steganography (hiding data in images).
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Process List (windows.pslist)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+PID	PPID	ImageFileName	Offset(V)	Threads	Handles	SessionId	Wow64	CreateTime	ExitTime	File output
+
+4	0	System	0xfa8000ca0040	80	570	N/A	False	2019-12-11 13:41:25.000000 UTC	N/A	Disabled
+248	4	smss.exe	0xfa800148f040	3	37	N/A	False	2019-12-11 13:41:25.000000 UTC	N/A	Disabled
+320	312	csrss.exe	0xfa800154f740	9	457	0	False	2019-12-11 13:41:32.000000 UTC	N/A	Disabled
+368	360	csrss.exe	0xfa8000ca81e0	7	199	1	False	2019-12-11 13:41:33.000000 UTC	N/A	Disabled
+376	248	psxss.exe	0xfa8001c45060	18	786	0	False	2019-12-11 13:41:33.000000 UTC	N/A	Disabled
+416	360	winlogon.exe	0xfa8001c5f060	4	118	1	False	2019-12-11 13:41:34.000000 UTC	N/A	Disabled
+424	312	wininit.exe	0xfa8001c5f630	3	75	0	False	2019-12-11 13:41:34.000000 UTC	N/A	Disabled
+484	424	services.exe	0xfa8001c98530	13	219	0	False	2019-12-11 13:41:35.000000 UTC	N/A	Disabled
+492	424	lsass.exe	0xfa8001ca0580	9	764	0	False	2019-12-11 13:41:35.000000 UTC	N/A	Disabled
+500	424	lsm.exe	0xfa8001ca4b30	11	185	0	False	2019-12-11 13:41:35.000000 UTC	N/A	Disabled
+588	484	svchost.exe	0xfa8001cf4b30	11	358	0	False	2019-12-11 13:41:39.000000 UTC	N/A	Disabled
+652	484	VBoxService.ex	0xfa8001d327c0	13	137	0	False	2019-12-11 13:41:40.000000 UTC	N/A	Disabled
+720	484	svchost.exe	0xfa8001d49b30	8	279	0	False	2019-12-11 13:41:41.000000 UTC	N/A	Disabled
+816	484	svchost.exe	0xfa8001d8c420	23	569	0	False	2019-12-11 13:41:42.000000 UTC	N/A	Disabled
+852	484	svchost.exe	0xfa8001da5b30	28	542	0	False	2019-12-11 13:41:43.000000 UTC	N/A	Disabled
+876	484	svchost.exe	0xfa8001da96c0	32	941	0	False	2019-12-11 13:41:43.000000 UTC	N/A	Disabled
+472	484	svchost.exe	0xfa8001e1bb30	19	476	0	False	2019-12-11 13:41:47.000000 UTC	N/A	Disabled
+1044	484	svchost.exe	0xfa8001e50b30	14	366	0	False	2019-12-11 13:41:48.000000 UTC	N/A	Disabled
+1208	484	spoolsv.exe	0xfa8001eba230	13	282	0	False	2019-12-11 13:41:51.000000 UTC	N/A	Disabled
+1248	484	svchost.exe	0xfa8001eda060	19	313	0	False	2019-12-11 13:41:52.000000 UTC	N/A	Disabled
+1372	484	svchost.exe	0xfa8001f58890	22	295	0	False	2019-12-11 13:41:54.000000 UTC	N/A	Disabled
+1416	484	TCPSVCS.EXE	0xfa8001f91b30	4	97	0	False	2019-12-11 13:41:55.000000 UTC	N/A	Disabled
+1508	484	sppsvc.exe	0xfa8000d3c400	4	141	0	False	2019-12-11 14:16:06.000000 UTC	N/A	Disabled
+948	484	svchost.exe	0xfa8001c38580	13	322	0	False	2019-12-11 14:16:07.000000 UTC	N/A	Disabled
+1856	484	wmpnetwk.exe	0xfa8002170630	16	451	0	False	2019-12-11 14:16:08.000000 UTC	N/A	Disabled
+480	484	SearchIndexer.	0xfa8001d376f0	14	701	0	False	2019-12-11 14:16:09.000000 UTC	N/A	Disabled
+296	484	taskhost.exe	0xfa8001eb47f0	8	151	1	False	2019-12-11 14:32:24.000000 UTC	N/A	Disabled
+1988	852	dwm.exe	0xfa8001dfa910	5	72	1	False	2019-12-11 14:32:25.000000 UTC	N/A	Disabled
+604	2016	explorer.exe	0xfa8002046960	33	927	1	False	2019-12-11 14:32:25.000000 UTC	N/A	Disabled
+1844	604	VBoxTray.exe	0xfa80021c75d0	11	140	1	False	2019-12-11 14:32:35.000000 UTC	N/A	Disabled
+2064	816	audiodg.exe	0xfa80021da060	6	131	0	False	2019-12-11 14:32:37.0</pre>
+    </div>
+
+    <div class="section">
+        <h2>Network Connections (windows.netscan)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+Offset	Proto	LocalAddr	LocalPort	ForeignAddr	ForeignPort	State	PID	Owner	Created
+
+0x3e80b840	UDPv4	0.0.0.0	3702	*	0		472	svchost.exe	2019-12-11 14:32:50.000000 UTC
+0x3e80b840	UDPv6	::	3702	*	0		472	svchost.exe	2019-12-11 14:32:50.000000 UTC
+0x3e80bbb0	UDPv4	0.0.0.0	3702	*	0		472	svchost.exe	2019-12-11 14:32:50.000000 UTC
+0x3e80bbb0	UDPv6	::	3702	*	0		472	svchost.exe	2019-12-11 14:32:50.000000 UTC
+0x3e820ec0	UDPv4	0.0.0.0	0	*	0		2368	svchost.exe	2019-12-11 14:32:51.000000 UTC
+0x3e820ec0	UDPv6	::	0	*	0		2368	svchost.exe	2019-12-11 14:32:51.000000 UTC
+0x3e825ec0	UDPv4	0.0.0.0	0	*	0		2368	svchost.exe	2019-12-11 14:32:52.000000 UTC
+0x3e825ec0	UDPv6	::	0	*	0		2368	svchost.exe	2019-12-11 14:32:52.000000 UTC
+0x3e86c5a0	UDPv4	0.0.0.0	0	*	0		2368	svchost.exe	2019-12-11 14:33:03.000000 UTC
+0x3e86c5a0	UDPv6	::	0	*	0		2368	svchost.exe	2019-12-11 14:33:03.000000 UTC
+0x3e8acba0	UDPv4	0.0.0.0	59438	*	0		472	svchost.exe	2019-12-11 14:33:14.000000 UTC
+0x3e8acba0	UDPv6	::	59438	*	0		472	svchost.exe	2019-12-11 14:33:14.000000 UTC
+0x3e8ae9c0	UDPv4	0.0.0.0	59437	*	0		472	svchost.exe	2019-12-11 14:33:14.000000 UTC
+0x3ea01720	TCPv4	0.0.0.0	19	0.0.0.0	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea062d0	UDPv4	0.0.0.0	19	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea062d0	UDPv6	::	19	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea06a40	UDPv4	0.0.0.0	19	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea06ef0	TCPv4	0.0.0.0	19	0.0.0.0	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea06ef0	TCPv6	::	19	::	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea0b900	TCPv4	0.0.0.0	17	0.0.0.0	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea10200	UDPv4	0.0.0.0	17	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea10200	UDPv6	::	17	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea10970	UDPv4	0.0.0.0	17	*	0		1416	TCPSVCS.EXE	2019-12-11 13:41:56.000000 UTC
+0x3ea10ef0	TCPv4	0.0.0.0	17	0.0.0.0	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea10ef0	TCPv6	::	17	::	0	LISTENING	1416	TCPSVCS.EXE	-
+0x3ea39190	UDPv4	0.0.0.0	49194	*	0		1372	svchost.exe	2019-12-11 13:41:58.000000 UTC
+0x3ea3c940	UDPv4	0.0.0.0	49195	*	0		1372	svchost.exe	2019-12-11 13:41:58.000000 UTC
+0x3ea3c940	UDPv6	::	49195	*	0		1372	svchost.exe	2019-12-11 13:41:58.000000 UTC
+0x3ea4a670	TCPv4	0.0.0.0	49156	0.0.0.0	0	LISTENING	484	services.exe	-
+0x3ea4a670	TCPv6	::	49156	::	0	LISTENING	484	services.exe	-
+0x3ea536b0	TCPv4	0.0.0.0	49156	0.0.0.0	0	LISTENING	484	services.exe	-
+0x3ea5a640	TCPv4	0.0.0.0	445	0.0.0.0	0	LISTENING	4	System	-
+0x3ea5a640	TCPv6	::	445	::	0	LISTENING	4	System	-
+0x3ea5d010	UDPv4	0.0.0.0	0	*	0		1044	svchost.exe	2019-12-11 13:42:02.000000 UTC
+0x3ea5d010	UDPv6	::	0	*	0		1044	svchost.exe	2019-12-11 13:42:02.000000 UTC
+0x3eaab540	UDPv4	0.0.0.0	5355	*	0		1044	svchost.exe	2019-12-11 13:42:05.000000 UTC
+0x3eaab540	UDPv6	::	5355	*	0		1044	svchost.exe	2019-12-11 13:42:05.000000 UTC
+0x3eaaece0	UDPv4	10.0.2.15	137	*	0		4	System	2019-12-11 13:42:02.000000 UTC
+0x3eac7760	TCPv4	0.0.0.0	3587	0.0.0.0	0	LISTENING	236</pre>
+    </div>
+
+    <div class="section">
+        <h2>Command Line History (windows.cmdline)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+PID	Process	Args
+
+4	System	-
+248	smss.exe	\SystemRoot\System32\smss.exe
+320	csrss.exe	%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
+368	csrss.exe	%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
+376	psxss.exe	%SystemRoot%\system32\psxss.exe
+416	winlogon.exe	winlogon.exe
+424	wininit.exe	wininit.exe
+484	services.exe	C:\Windows\system32\services.exe
+492	lsass.exe	C:\Windows\system32\lsass.exe
+500	lsm.exe	C:\Windows\system32\lsm.exe
+588	svchost.exe	C:\Windows\system32\svchost.exe -k DcomLaunch
+652	VBoxService.ex	C:\Windows\System32\VBoxService.exe
+720	svchost.exe	C:\Windows\system32\svchost.exe -k RPCSS
+816	svchost.exe	C:\Windows\System32\svchost.exe -k LocalServiceNetworkRestricted
+852	svchost.exe	C:\Windows\System32\svchost.exe -k LocalSystemNetworkRestricted
+876	svchost.exe	C:\Windows\system32\svchost.exe -k netsvcs
+472	svchost.exe	C:\Windows\system32\svchost.exe -k LocalService
+1044	svchost.exe	C:\Windows\system32\svchost.exe -k NetworkService
+1208	spoolsv.exe	C:\Windows\System32\spoolsv.exe
+1248	svchost.exe	C:\Windows\system32\svchost.exe -k LocalServiceNoNetwork
+1372	svchost.exe	C:\Windows\system32\svchost.exe -k LocalServiceAndNoImpersonation
+1416	TCPSVCS.EXE	C:\Windows\System32\tcpsvcs.exe
+1508	sppsvc.exe	C:\Windows\system32\sppsvc.exe
+948	svchost.exe	C:\Windows\System32\svchost.exe -k secsvcs
+1856	wmpnetwk.exe	"C:\Program Files\Windows Media Player\wmpnetwk.exe"
+480	SearchIndexer.	C:\Windows\system32\SearchIndexer.exe /Embedding
+296	taskhost.exe	"taskhost.exe"
+1988	dwm.exe	"C:\Windows\system32\Dwm.exe"
+604	explorer.exe	C:\Windows\Explorer.EXE
+1844	VBoxTray.exe	"C:\Windows\System32\VBoxTray.exe" 
+2064	audiodg.exe	C:\Windows\system32\AUDIODG.EXE 0x20c
+2368	svchost.exe	C:\Windows\System32\svchost.exe -k LocalServicePeerNet
+1984	cmd.exe	"C:\Windows\system32\cmd.exe" 
+2692	conhost.exe	\??\C:\Windows\system32\conhost.exe
+2424	mspaint.exe	"C:\Windows\system32\mspaint.exe" 
+2660	svchost.exe	C:\Windows\system32\svchost.exe -k imgsvc
+2760	csrss.exe	%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
+2808	winlogon.exe	winlogon.exe
+2908	taskhost.exe	"taskhost.exe"
+3004	dwm.exe	"C:\Windows\system32\Dwm.exe"
+2504	explorer.exe	C:\Windows\Explorer.EXE
+2304	VBoxTray.exe	"C:\Windows\System32\VBoxTray.exe" 
+2524	Searc</pre>
+    </div>
+
+    <div class="section">
+        <h2>DLL List (windows.dlllist)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+PID	Process	Base	Size	Name	Path	LoadCount	LoadTime	File output
+
+248	smss.exe	0x47ef0000	0x20000	smss.exe	\SystemRoot\System32\smss.exe	-1	N/A	Disabled
+248	smss.exe	0x77c90000	0x1a9000	ntdll.dll	C:\Windows\SYSTEM32\ntdll.dll	-1	N/A	Disabled
+320	csrss.exe	0x4a620000	0x6000	csrss.exe	C:\Windows\system32\csrss.exe	-1	N/A	Disabled
+320	csrss.exe	0x77c90000	0x1a9000	ntdll.dll	C:\Windows\SYSTEM32\ntdll.dll	-1	N/A	Disabled
+320	csrss.exe	0x7fefdc60000	0x13000	CSRSRV.dll	C:\Windows\system32\CSRSRV.dll	-1	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefdc40000	0x11000	basesrv.DLL	C:\Windows\system32\basesrv.DLL	4	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefdc00000	0x38000	winsrv.DLL	C:\Windows\system32\winsrv.DLL	2	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x77b90000	0xfa000	USER32.dll	C:\Windows\system32\USER32.dll	11	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefe740000	0x67000	GDI32.dll	C:\Windows\system32\GDI32.dll	12	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x77a70000	0x11f000	kernel32.dll	C:\Windows\SYSTEM32\kernel32.dll	159	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefdcb0000	0x6b000	KERNELBASE.dll	C:\Windows\system32\KERNELBASE.dll	458	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefe710000	0xe000	LPK.dll	C:\Windows\system32\LPK.dll	3	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefe850000	0xc9000	USP10.dll	C:\Windows\system32\USP10.dll	3	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefe7b0000	0x9f000	msvcrt.dll	C:\Windows\system32\msvcrt.dll	7	2019-12-11 13:41:32.000000 UTC	Disabled
+320	csrss.exe	0x7fefdbf0000	0xc000	sxssrv.DLL	C:\Windows\system32\sxssrv.DLL	1	2019-12-11 13:41:33.000000 UTC	Disabled
+320	csrss.exe	0x7fefd820000	0x91000	sxs.dll	C:\Windows\system32\sxs.dll	1	2019-12-11 13:41:35.000000 UTC	Disabled
+320	csrss.exe	0x7fefdfb0000	0x12d000	RPCRT4.dll	C:\Windows\system32\RPCRT4.dll	7	2019-12-11 13:41:35.000000 UTC	Disabled
+320	csrss.exe	0x7fefd810000	0xf000	CRYPTBASE.dll	C:\Windows\system32\CRYPTBASE.dll	1	2019-12-11 13:41:35.000000 UTC	Disabled
+320	csrss.exe	0x7fefe390000	0xdb000	ADVAPI32.dll	C:\Windows\system32\ADVAPI32.dll	1	2019-12-11 13:41:42.000000 UTC	Disabled
+320	csrss.exe	0x7fefe720000	0x1f000	sechost.dll	C:\Windows\SYSTEM32\sechost.dll	6	2019-12-11 13:41:42.000000 UTC	Disabled
+368	csrss.exe	0x4a620000	0x6000	csrss.exe	C:\Windows\system32\csrss.exe	-1	N/A	Disabled
+368	csrss.exe	0x77c90000	0x1a9000	ntdll.dll	C:\Windows\SYSTEM32\ntdll.dll	-1	N/A	Disabled
+368	csrss.exe	0x7fefdc60000	0x13000	CSRSRV.dll	C:\Windows\system32\CSRSRV.dll	-1	2019-12-11 13:41:33.000000 UTC	Disabled
+368	csrss.exe	0x7fefdc40000	0x11000	basesrv.DLL	C:\Windows\system32\basesrv.DLL	4	2019-12-11 13:41:33.000000 UTC	Disabled
+368	csrss.exe	0x7fefdc00000	0x38000	winsrv.DLL	C:\Windows\system32\winsrv.DLL	2	2019-12-11 13:41:33.000000 UTC	Disabled
+368	csrss.exe	0x77b90000	0xfa000	USER32.dll	C:\Windows\system32\USER32.dll	11	20</pre>
+    </div>
+
+    <div class="section">
+        <h2>Malicious Code Injection (windows.malfind)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+PID	Process	Start VPN	End VPN	Tag	Protection	CommitCharge	PrivateMemory	File output	Notes	Hexdump	Disasm
+
+816	svchost.exe	0xdf0000	0xdfffff	VadS	PAGE_EXECUTE_READWRITE	16	1	Disabled	N/A	
+41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 A.....H.8.......
+48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe H. .A.....H.8...
+fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 ....H. .A.....H.
+38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00 8.......H. .A...	41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00
+472	svchost.exe	0xb30000	0xb3ffff	VadS	PAGE_EXECUTE_READWRITE	16	1	Disabled	N/A	
+41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 A.....H.8.......
+48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe H. .A.....H.8...
+fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 ....H. .A.....H.
+38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00 8.......H. .A...	41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00
+948	svchost.exe	0x23f0000	0x246ffff	VadS	PAGE_EXECUTE_READWRITE	128	1	Disabled	N/A	
+20 00 00 00 e0 ff 07 00 0c 00 00 00 01 00 05 00  ...............
+00 42 00 50 00 30 00 70 00 60 00 00 00 00 00 00 .B.P.0.p.`......
+48 8b 45 28 c7 00 00 00 00 00 c7 40 04 00 00 00 H.E(.......@....
+00 48 8b 45 28 48 8d 40 08 48 89 c2 48 8b 45 20 .H.E(H.@.H..H.E 	20 00 00 00 e0 ff 07 00 0c 00 00 00 01 00 05 00 00 42 00 50 00 30 00 70 00 60 00 00 00 00 00 00 48 8b 45 28 c7 00 00 00 00 00 c7 40 04 00 00 00 00 48 8b 45 28 48 8d 40 08 48 89 c2 48 8b 45 20
+948	svchost.exe	0x4c90000	0x4d8ffff	VadS	PAGE_EXECUTE_READWRITE	256	1	Disabled	N/A	
+20 00 00 00 e0 ff 0f 00 0c 00 00 00 01 00 05 00  ...............
+00 42 00 50 00 30 00 70 00 60 00 00 00 00 00 00 .B.P.0.p.`......
+ba fc ff ff ff 03 55 20 03 55 5c b9 04 00 1a 00 ......U .U\.....
+4c 8b c5 ff 95 e0 37 00 00 8b 4d 24 89 08 48 8d L.....7...M$..H.	20 00 00 00 e0 ff 0f 00 0c 00 00 00 01 00 05 00 00 42 00 50 00 30 00 70 00 60 00 00 00 00 00 00 ba fc ff ff ff 03 55 20 03 55 5c b9 04 00 1a 00 4c 8b c5 ff 95 e0 37 00 00 8b 4d 24 89 08 48 8d
+1856	wmpnetwk.exe	0xb80000	0xb8ffff	VadS	PAGE_EXECUTE_READWRITE	16	1	Disabled	N/A	
+41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 A.....H.8.......
+48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe H. .A.....H.8...
+fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 ....H. .A.....H.
+38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00 8.......H. .A...	41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 82 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 48 ff 20 90 41 ba 83 00
+604	explorer.exe	0x2810000	0x281ffff	VadS	PAGE_EXECUTE_READWRITE	16	1	Disabled	N/A	
+41 ba 80 00 00 00 48 b8 38 a1 b7 fe fe 07 00 00 A.....H.8.......
+48 ff 20 90 41 ba 81 00 00 00 48 b8 38 a1</pre>
+    </div>
+
+    <div class="section">
+        <h2>Open Handles (windows.handles)</h2>
+        <pre>Volatility 3 Framework 2.27.0
+
+PID	Process	Offset	HandleValue	Type	GrantedAccess	Name
+
+4	System	0xfa8000ca0040	0x4	Process	0x1fffff	System Pid 4
+4	System	0xf8a000069ee0	0x8	Key	0x2001f	MACHINE\SYSTEM\CONTROLSET001\CONTROL\HIVELIST
+4	System	0xf8a000006270	0xc	Directory	0xf000f	GLOBAL??
+4	System	0xf8a000019ca0	0x10	Key	0x0	-
+4	System	0xf8a000081290	0x14	Key	0x2001f	MACHINE\SYSTEM\CONTROLSET001\CONTROL\PRODUCTOPTIONS
+4	System	0xf8a000084460	0x18	Key	0xf003f	MACHINE\SYSTEM\CONTROLSET001\CONTROL\SESSION MANAGER\MEMORY MANAGEMENT\PREFETCHPARAMETERS
+4	System	0xf8a0000806c0	0x1c	Key	0x2001f	MACHINE\SYSTEM\SETUP
+4	System	0xfa8000ce1e60	0x20	ALPC Port	0x1f0001	PowerMonitorPort
+4	System	0xfa8000cefd30	0x24	ALPC Port	0x1f0001	PowerPort
+4	System	0xf8a00005bca0	0x28	Key	0x20019	MACHINE\HARDWARE\DESCRIPTION\SYSTEM\MULTIFUNCTIONADAPTER
+4	System	0xfa8000d82460	0x2c	Thread	0x1fffff	Tid 148 Pid 4
+4	System	0xf8a0000810b0	0x30	Key	0xf003f	MACHINE\SYSTEM\CONTROLSET001
+4	System	0xf8a000083e20	0x34	Key	0xf003f	MACHINE\SYSTEM\CONTROLSET001\ENUM
+4	System	0xf8a00006a990	0x38	Key	0xf003f	MACHINE\SYSTEM\CONTROLSET001\CONTROL\CLASS
+4	System	0xf8a000084550	0x3c	Key	0xf003f	MACHINE\SYSTEM\CONTROLSET001\SERVICES
+4	System	0xfa800148fcb0	0x40	ALPC Port	0x1f0001	SeRmCommandPort
+4	System	0xf8a0001de040	0x44	Token	0xe	-
+4	System	0xf8a00006ab30	0x48	Key	0x20019	MACHINE\SYSTEM\CONTROLSET001\CONTROL\WMI\SECURITY
+4	System	0xf8a00136bba0	0x4c	Directory	0x4	WindowStations
+4	System	0xf8a00361a6a0	0x50	Key	0x10	MACHINE\SOFTWARE\POLICIES\MICROSOFT\WINDOWS
+4	System	0xfa8001468560	0x54	File	0x120116	\Device\Mup
+4	System	0xfa8001556e60	0x58	File	0x2000003	\Device\HarddiskVolume2\Windows\System32\config\DEFAULT.LOG1
+4	System	0xfa80014c6f20	0x5c	File	0x13019f	\Device\clfs\Device\HarddiskVolume1\$Extend\$RmMetadata\$TxfLog\$TxfLog
+4	System	0xfa80014cca00	0x60	File	0x12019f	\Device\HarddiskVolume1\$Extend\$RmMetadata\$TxfLog\$TxfLogContainer00000000000000000001
+4	System	0xfa80014cc590	0x64	File	0x12019f	\Device\HarddiskVolume1\$Extend\$RmMetadata\$TxfLog\$TxfLogContainer00000000000000000002
+4	System	0xfa80014a4e20	0x68	File	0x12019f	\Device\clfsTxfLog
+4	System	0xfa80014cbd10	0x6c	File	0x1	\Device\HarddiskVolume1
+4	System	0xfa80014cd460	0x70	File	0x13019f	\Device\clfs\Device\HarddiskVolume1\$Extend\$RmMetadata\$TxfLog\$TxfLog
+4	System	0xf8a00366cab0	0x74	Key	0x9	MACHINE\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION\IMAGE FILE EXECUTION OPTIONS
+4	System	0xfa80013a8420	0x78	File	0x120089	\Device\HarddiskVolume2\System Volume Information\{9580ead8-1b0d-11ea-b265-080027c6589a}{3808876b-c176-4e48-b7ae-04046e6cc752}
+4	System	0xfa80014cd050	0x7c	File	0x12019f	\Device\clfs\Device\HarddiskVolume1\$Extend\$RmMetadata\$TxfLog\$TxfLog
+4	System	0xfa8000cbb6c0	0x80	File	0x120089	\Device\HarddiskVolume2\System Volume Information\{8400a397-1709-11ea-82a6-080027c6589a}{3808876b-c176-4e48-b7ae-04046e6cc752}
+4	System	0xfa80013ad640	0x84	File	0x120089	\Device\HarddiskVolume2\System Volume Information\{8400a35c-1709-11ea-</pre>
+    </div>
+
+    <div class='section'>
+        <h2>YARA Scan Results — Auto Severity Scoring</h2>
+        <div style='background:#cc0000;color:white;padding:10px 20px;
+        border-radius:8px;font-size:18px;font-weight:bold;margin-bottom:15px'>
+        Overall Threat Level: CRITICAL — 22 rules matched
+        </div>
+<h3 style='color:#cc0000'>CRITICAL Findings</h3><div class='suspicious'><span class='badge high'>CRITICAL</span> APT1_LIGHTBOLT (APT_APT1)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Mirage_APT (APT_Mirage)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> TSCookie (MalConfScan)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Ursnif (MalConfScan)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Datper (MalConfScan)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> PlugX (MalConfScan)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> CAP_HookExKeylogger (MALW_CAP_HookExKeylogger)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Kovter (MALW_Kovter)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> spyeye (MALW_Miscelanea)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> spyeye_plugins (MALW_Miscelanea)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> YayihStrings (MALW_Yayih)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Yayih (MALW_Yayih)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Bolonyokte (RAT_Bolonyokte)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> Cerberus (RAT_Cerberus)</div><div class='suspicious'><span class='badge high'>CRITICAL</span> UPX (RAT_Ratdecoders)</div><h3 style='color:#ff4444'>HIGH Findings</h3><div class='suspicious'><span class='badge high'>HIGH</span> Insta11Strings (MALW_Install11)</div><div class='suspicious'><span class='badge high'>HIGH</span> Insta11 (MALW_Install11)</div><div class='suspicious'><span class='badge high'>HIGH</span> SharedStrings (MALW_LURK0)</div><div class='suspicious'><span class='badge high'>HIGH</span> shylock (MALW_Miscelanea)</div><div class='suspicious'><span class='badge high'>HIGH</span> RooterStrings (MALW_Rooter)</div><div class='suspicious'><span class='badge high'>HIGH</span> Rooter (MALW_Rooter)</div><h3 style='color:#0088ff'>LOW Findings</h3><div class='suspicious'><span class='badge info'>LOW</span> TSC_Loader (MalConfScan)</div></div>
+    <div class="section">
+        <h2>Analyst Conclusion</h2>
+        <p>The memory image shows evidence of suspicious activity including memory acquisition tools,
+        file archiving, and active command prompt sessions. YARA scanning identified critical malware
+        signatures including APT malware families and remote access trojans. Further deep-dive analysis
+        is recommended focusing on process injection, network connections, and hidden files.</p>
+    </div>
+</body>
+</html>
